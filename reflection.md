@@ -4,8 +4,7 @@
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+For the design, I chose four main classes: Owner, Pet, Task, and Scheduler. The Owner class stores information about the pet owner and keeps track of their pets. The Pet class represents each animal and stores basic information like name, species, age, and related care tasks. The Task class represents things the owner needs to do, such as feedings, walks, medications, or appointments. The Scheduler class manages task organization by finding today’s tasks and sorting tasks by priority. It is worth noting that Pet and Scheduler serve different scopes rather than duplicating responsibility: Pet owns the task list for a single animal, while Scheduler provides a cross-pet view used for day-level scheduling. This structure keeps the system modular because each class has a clear responsibility.
 
 #### Core Actions:
 
@@ -15,8 +14,15 @@
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+Yes, several refinements were made after reviewing the initial skeleton against the UML.
+
+The most significant change was making `Scheduler.add_task()` the single entry point for registering a task. In the original skeleton, `Pet.add_task()` and `Scheduler.add_task()` were independent, meaning a caller could add a task to a pet without the Scheduler ever knowing about it. The fix was to have `Scheduler.add_task(task, pet)` call `pet.add_task()` internally, so both lists are always updated together.
+
+A related change was adding a `pet_name` field to the `Task` dataclass. Because tasks were only stored in flat lists, there was no way to tell which pet a task belonged to when the Scheduler returned results. Stamping `pet_name` onto the task inside `Pet.add_task()` solves this without requiring a full object back-reference.
+
+A `Scheduler.build_from_owner()` class method was also added. The original design had no connection between an Owner and a Scheduler, making it impossible to bootstrap the Scheduler from an existing owner's pet data. This method bridges that gap.
+
+Finally, two smaller robustness fixes were made: a `__post_init__` validator on `Task` that rejects non-ISO-8601 date strings immediately rather than silently returning wrong results later, and an inline comment on `prioritize_tasks()` documenting that priority 1 means most urgent, so the ascending sort is intentional.
 
 ---
 

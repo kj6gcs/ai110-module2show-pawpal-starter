@@ -16,9 +16,18 @@ from datetime import date
 class Task:
     title: str
     task_type: str
-    due_date: str          # ISO-8601 string, e.g. "2026-06-25"
-    priority: int
+    due_date: str       # must be ISO-8601, e.g. "2026-06-25"
+    priority: int       # 1 = highest urgency; lower number = scheduled first
     completed: bool = False
+    pet_name: str = ""  # stamped by Pet.add_task(); identifies which pet this belongs to
+
+    def __post_init__(self) -> None:
+        try:
+            date.fromisoformat(self.due_date)
+        except ValueError:
+            raise ValueError(
+                f"due_date must be ISO-8601 (YYYY-MM-DD), got: {self.due_date!r}"
+            )
 
     def mark_complete(self) -> None:
         """Mark this task as completed."""
@@ -41,12 +50,48 @@ class Pet:
     tasks: list[Task] = field(default_factory=list)
 
     def add_task(self, task: Task) -> None:
-        """Attach a Task to this pet."""
+        """Attach a Task to this pet and stamp the pet's name onto the task."""
+        task.pet_name = self.name
         self.tasks.append(task)
 
     def get_tasks(self) -> list[Task]:
         """Return all tasks for this pet."""
         return self.tasks
+
+
+# ---------------------------------------------------------------------------
+# Scheduler — manages and prioritizes tasks across pets
+# ---------------------------------------------------------------------------
+
+class Scheduler:
+    def __init__(self) -> None:
+        self.tasks: list[Task] = []
+
+    def add_task(self, task: Task, pet: Pet) -> None:
+        """Single entry point: registers the task with the pet AND the scheduler.
+
+        Calling this instead of pet.add_task() directly keeps both task lists
+        in sync and ensures every task carries a pet_name back-reference.
+        """
+        pet.add_task(task)       # stamps pet_name, appends to pet.tasks
+        self.tasks.append(task)  # keeps scheduler's list current
+
+    def get_today_tasks(self) -> list[Task]:
+        """Return all tasks that are due today."""
+        return [t for t in self.tasks if t.is_due_today()]
+
+    def prioritize_tasks(self) -> list[Task]:
+        """Return tasks sorted ascending by priority (1 = most urgent)."""
+        return sorted(self.tasks, key=lambda t: t.priority)
+
+    @classmethod
+    def build_from_owner(cls, owner: Owner) -> Scheduler:
+        """Construct a Scheduler pre-loaded with every task from an owner's pets."""
+        scheduler = cls()
+        for pet in owner.get_pets():
+            for task in pet.get_tasks():
+                scheduler.tasks.append(task)
+        return scheduler
 
 
 # ---------------------------------------------------------------------------
@@ -70,24 +115,3 @@ class Owner:
     def get_pets(self) -> list[Pet]:
         """Return all pets owned by this owner."""
         return self.pets
-
-
-# ---------------------------------------------------------------------------
-# Scheduler — manages and prioritizes tasks across pets
-# ---------------------------------------------------------------------------
-
-class Scheduler:
-    def __init__(self) -> None:
-        self.tasks: list[Task] = []
-
-    def add_task(self, task: Task) -> None:
-        """Add a task to the scheduler's queue."""
-        self.tasks.append(task)
-
-    def get_today_tasks(self) -> list[Task]:
-        """Return all tasks that are due today."""
-        return [t for t in self.tasks if t.is_due_today()]
-
-    def prioritize_tasks(self) -> list[Task]:
-        """Return tasks sorted by priority (ascending = highest urgency)."""
-        return sorted(self.tasks, key=lambda t: t.priority)
