@@ -47,39 +47,61 @@ pip install -r requirements.txt
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule
+----------------
+08:00 | Buddy: Morning walk (Exercise) - Priority 1 [Pending]
+09:00 | Buddy: Breakfast (Feeding) - Priority 2 [Pending]
+10:30 | Mittens: Clean litter box (Cleaning) - Priority 2 [Pending]
+18:00 | Mittens: Evening medicine (Medication) - Priority 1 [Pending]
 ```
 
 ## 🧪 Testing PawPal+
 
 ```bash
 # Run the full test suite:
-pytest
+
+python -m pytest
+============================================================================= test session starts ==============================================================================
+platform win32 -- Python 3.13.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\0000 Codepath\AI110 - Foundations of AI Engineering\ai110-module2show-pawpal-starter
+plugins: anyio-4.14.1
+collected 6 items
+
+tests\test_pawpal.py ......                                                                                                                                                                                         [100%]
+============================================================================== 6 passed in 0.10s ===============================================================================
 
 # Run with coverage:
-pytest --cov
-```
 
-Sample test output:
+python -m pytest --cov=pawpal_system
+============================================================================== test session starts ===============================================================================
+platform win32 -- Python 3.13.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: D:\0000 Codepath\AI110 - Foundations of AI Engineering\ai110-module2show-pawpal-starter
+plugins: anyio-4.14.1, cov-7.1.0
+collected 9 items
 
-```
-# Paste your pytest output here
+tests\test_pawpal.py .........                                                                                                                                                                                      [100%]
+
+================================================================================= tests coverage =================================================================================
+____________________________________________________________________________________ coverage: platform win32, python 3.13.3-final-0 _____________________________________________________________________________________
+
+Name               Stmts   Miss  Cover
+--------------------------------------
+pawpal_system.py      60      0   100%
+--------------------------------------
+TOTAL                 60      0   100%
+=============================================================================== 9 passed in 0.08s ================================================================================
 ```
 
 ## 📐 Smarter Scheduling
 
 > Fill in once you've implemented scheduling logic.
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Feature           | Method(s)            | Notes                                           |
+| ----------------- | -------------------- | ----------------------------------------------- |
+| Task sorting      | `prioritize_tasks()` | Sorts tasks by due date, due time, and priority |
+| Filtering         | `get_today_tasks()`  | Shows only tasks due today                      |
+| Conflict handling | Not implemented yet  | Planned for a later phase                       |
+| Recurring tasks   | Not implemented yet  | Frequency/recurrence can be added later         |
 
 ## 📸 Demo Walkthrough
 
@@ -91,4 +113,4 @@ Describe your app in numbered steps so a reader can follow along without watchin
 4. <!-- Describe this step -->
 5. <!-- Add more steps as needed -->
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+**Screenshot or video** _(optional)_: <!-- Insert a screenshot or link to a demo video here -->
