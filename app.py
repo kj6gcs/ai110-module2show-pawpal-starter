@@ -77,6 +77,7 @@ if pets:
         due_date = st.date_input("Due date", value=date.today())
         due_time = st.time_input("Due time")
         priority = st.selectbox("Priority", [1, 2, 3], index=1)
+        frequency = st.selectbox("Frequency", ["once", "daily", "weekly"])
 
         submitted_task = st.form_submit_button("Add Task")
 
@@ -91,7 +92,8 @@ if pets:
                 due_date.isoformat(),
                 due_time.strftime("%H:%M"),
                 int(priority),
-            )
+                frequency,
+)
 
             st.session_state.scheduler.add_task(new_task, selected_pet)
             st.success(f"Added task for {selected_pet_name}!")
@@ -102,24 +104,30 @@ st.divider()
 
 st.subheader("Today's Schedule")
 
-if st.button("Generate Schedule"):
-    today_tasks = st.session_state.scheduler.get_today_tasks()
+today_tasks = st.session_state.scheduler.get_today_tasks()
 
-    if today_tasks:
-        sorted_tasks = sorted(today_tasks, key=lambda task: (task.due_time, task.priority))
+if today_tasks:
+    sorted_tasks = sorted(today_tasks, key=lambda task: (task.due_time, task.priority))
+    st.table([
+        {
+            "Time": task.due_time,
+            "Pet": task.pet_name,
+            "Task": task.title,
+            "Type": task.task_type,
+            "Priority": task.priority,
+            "Frequency": task.frequency,
+            "Status": "Done" if task.completed else "Pending",
+        }
+        for task in sorted_tasks
+    ])
+else:
+    st.info("No tasks scheduled for today.")
 
-        schedule_rows = [
-            {
-                "Time": task.due_time,
-                "Pet": task.pet_name,
-                "Task": task.title,
-                "Type": task.task_type,
-                "Priority": task.priority,
-                "Status": "Done" if task.completed else "Pending",
-            }
-            for task in sorted_tasks
-        ]
+conflicts = st.session_state.scheduler.detect_conflicts()
 
-        st.table(schedule_rows)
-    else:
-        st.info("No tasks scheduled for today.")
+if conflicts:
+    st.warning("Schedule conflicts found:")
+    for conflict in conflicts:
+        st.write(f"⚠️ {conflict}")
+else:
+    st.success("No schedule conflicts detected.")

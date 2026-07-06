@@ -30,13 +30,15 @@ Finally, two smaller robustness fixes were made: a `__post_init__` validator on 
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+My scheduler considers several constraints when organizing tasks. It uses the task's due date to determine whether it belongs in today's schedule, sorts tasks chronologically by their scheduled time, and then uses task priority to determine the order of tasks that occur around the same time. The scheduler also keeps track of the pet associated with each task so tasks can be filtered by pet, and it supports recurring daily and weekly tasks by automatically creating the next occurrence when a recurring task is completed.
+
+I chose these constraints because they represent the information a pet owner is most likely to care about when planning their day. Knowing when a task needs to happen is more important than simply knowing how urgent it is, so time is considered first, with priority used to organize tasks that occur during the same part of the day.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+One tradeoff my scheduler makes is that conflict detection only checks for tasks scheduled at the exact same date and time. It does not consider task duration or detect partially overlapping appointments.
+
+This tradeoff keeps the scheduling algorithm simple, easy to understand, and efficient while still providing useful warnings for the most obvious conflicts. A more sophisticated scheduling algorithm could compare task durations and overlapping time windows, but that would add complexity beyond the scope of this project.
 
 ---
 
@@ -44,13 +46,15 @@ Finally, two smaller robustness fixes were made: a `__post_init__` validator on 
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+I used AI throughout the project as a development assistant rather than as a code generator. AI helped brainstorm the initial class design, review my UML, suggest improvements to my class relationships, generate starter implementations, explain Python features such as `dataclasses`, lambda expressions, and `st.session_state`, and help create and debug automated tests. I also used AI to review documentation and provide suggestions for improving readability and organization.
+
+The most helpful prompts were those that focused on a specific problem instead of asking AI to solve the entire project. Questions such as "How should the Scheduler retrieve all tasks from the Owner's pets?" or "Why is this test failing?" produced much more useful results than broad requests for complete implementations.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+One example where I did not accept an AI suggestion as-is was during the Scheduler implementation. An early suggestion simplified the relationships between the classes, but it removed some of the separation of responsibilities that I wanted between the Owner, Pet, and Scheduler classes. Instead of replacing my design, I adapted the suggestion by making Scheduler.add_task() the single entry point while preserving the overall architecture.
+
+I evaluated AI suggestions by comparing them against my UML, running the application, executing the automated test suite, and verifying that each change actually improved the project without introducing regressions.
 
 ---
 
@@ -58,13 +62,15 @@ Finally, two smaller robustness fixes were made: a `__post_init__` validator on 
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+The automated test suite verifies the core behaviors of the application, including task completion, adding tasks to pets, owner management, scheduler registration, retrieving today's tasks, task prioritization, chronological sorting, filtering by pet, filtering by completion status, recurring daily and weekly tasks, one-time task behavior, conflict detection, and invalid date validation.
+
+These tests were important because they verify both the individual classes and the scheduling algorithms. They also helped ensure that adding new features during later phases did not accidentally break functionality that was already working.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+I am very confident in the reliability of the current implementation. The project includes sixteen automated unit tests, all of which pass successfully, and the backend achieved 100% code coverage using `pytest-cov`. While code coverage does not guarantee the absence of bugs, it provides confidence that every executable path in the current implementation has been exercised.
+
+If I continued developing this project, I would add tests for overlapping task durations, deleting or editing tasks after creation, multiple owners with separate accounts, recurring tasks over long periods of time, and additional edge cases involving invalid user input.
 
 ---
 
@@ -72,12 +78,12 @@ Finally, two smaller robustness fixes were made: a `__post_init__` validator on 
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+I am most satisfied with how the object-oriented design evolved throughout the project. The responsibilities of each class remained well separated while still working together as a complete system. I was also pleased with the automated testing, which grew from a few basic tests into a comprehensive suite with sixteen passing tests and 100% code coverage.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+With another iteration, I would expand the scheduling algorithm to consider task duration instead of only scheduled times. I would also redesign the application to support multiple owner accounts, persistent data storage, and editing or deleting existing tasks through the Streamlit interface. Those additions would make the application much closer to a production-ready pet management system.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+The biggest lesson I learned is that AI is most effective when treated as a collaborator rather than an autopilot. AI can quickly generate ideas, explain unfamiliar concepts, and help debug problems, but it still requires human oversight to make architectural decisions, evaluate tradeoffs, and verify correctness. Acting as the lead architect throughout the project reinforced the importance of understanding the system well enough to decide when to accept, modify, or reject AI-generated suggestions.

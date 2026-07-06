@@ -22,6 +22,17 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## ✨ Features
+
+- Manage owner and pet information
+- Schedule pet care tasks with priorities and recurrence
+- Automatically sort daily schedules chronologically
+- Filter tasks by pet and completion status
+- Detect scheduling conflicts
+- Support daily and weekly recurring tasks
+- Streamlit-based user interface
+- Automated unit tests with 100% code coverage
+
 ## Getting started
 
 ### Setup
@@ -92,9 +103,19 @@ TOTAL                 60      0   100%
 =============================================================================== 9 passed in 0.08s ================================================================================
 ```
 
-## 📐 Smarter Scheduling
+### Updated Automated Tests (end of Phase 5) Results
 
-> Fill in once you've implemented scheduling logic.
+```
+============================================================================== test session starts ==============================================================================
+platform win32 -- Python 3.13.3, pytest-9.0.3, pluggy-1.6.0
+rootdir: D:\0000 Codepath\AI110 - Foundations of AI Engineering\ai110-module2show-pawpal-starter
+plugins: anyio-4.13.0
+collected 16 items
+
+tests\test_pawpal.py ................                                                                                                                                                              [100%]
+
+============================================================================== 16 passed in 0.07s ===============================================================================
+```
 
 ## 📐 Smarter Scheduling
 
@@ -107,12 +128,23 @@ TOTAL                 60      0   100%
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+1. The user opens the PawPal+ Streamlit app.
+2. The user enters or updates their owner profile.
+3. The user adds one or more pets.
+4. The user schedules tasks for each pet, including task type, due date, due time, priority, and frequency.
+5. The app stores the owner, pets, tasks, and scheduler in `st.session_state` so data persists during the session.
+6. The schedule view displays today’s tasks in chronological order.
+7. If two tasks are scheduled for the same date and time, the app displays a warning instead of crashing.
+8. The backend can also mark recurring tasks complete and create the next daily or weekly occurrence.
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+**Screenshot or video** _(optional)_:
 
-**Screenshot or video** _(optional)_: <!-- Insert a screenshot or link to a demo video here -->
+<p align="center">
+  <a href="https://youtu.be/NUvS6ufa0jA">
+    <img src="https://img.youtube.com/vi/NUvS6ufa0jA/maxresdefault.jpg" width="800" alt="PawPal+ Demo">
+  </a>
+</p>
+
+<p align="center">
+  ▶️ Click the thumbnail above to watch the full demonstration on YouTube.
+</p>
