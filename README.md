@@ -96,12 +96,14 @@ TOTAL                 60      0   100%
 
 > Fill in once you've implemented scheduling logic.
 
-| Feature           | Method(s)            | Notes                                           |
-| ----------------- | -------------------- | ----------------------------------------------- |
-| Task sorting      | `prioritize_tasks()` | Sorts tasks by due date, due time, and priority |
-| Filtering         | `get_today_tasks()`  | Shows only tasks due today                      |
-| Conflict handling | Not implemented yet  | Planned for a later phase                       |
-| Recurring tasks   | Not implemented yet  | Frequency/recurrence can be added later         |
+## 📐 Smarter Scheduling
+
+| Feature            | Method(s)                                                      | Notes                                                            |
+| ------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Task sorting       | `Scheduler.sort_by_time()` and `Scheduler.prioritize_tasks()`  | Sorts tasks by scheduled time or by date, time, and priority     |
+| Filtering          | `Scheduler.filter_by_pet()` and `Scheduler.filter_by_status()` | Filters tasks by pet name or completion status                   |
+| Conflict detection | `Scheduler.detect_conflicts()`                                 | Returns warning messages when tasks share the same date and time |
+| Recurring tasks    | `Scheduler.mark_task_complete()`                               | Marks a task complete and creates the next daily or weekly task  |
 
 ## 📸 Demo Walkthrough
 

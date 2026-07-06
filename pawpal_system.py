@@ -5,7 +5,7 @@ Classes mirror the UML in diagrams/uml_draft.mmd.
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 
 
 # ---------------------------------------------------------------------------
@@ -16,9 +16,10 @@ from datetime import date
 class Task:
     title: str
     task_type: str
-    due_date: str       # ISO-8601, e.g. "2026-07-04"
-    due_time: str       # 24-hour time, e.g. "08:30"
-    priority: int       # 1 = highest urgency
+    due_date: str
+    due_time: str
+    priority: int
+    frequency: str = "once"
     completed: bool = False
     pet_name: str = ""
 
@@ -69,7 +70,7 @@ class Scheduler:
         self.tasks: list[Task] = []
 
     def add_task(self, task: Task, pet: Pet) -> None:
-        """Single entry point: registers the task with the pet AND the scheduler."""
+        """Register the task with both the pet and scheduler."""
         pet.add_task(task)
         self.tasks.append(task)
 
@@ -80,6 +81,62 @@ class Scheduler:
     def prioritize_tasks(self) -> list[Task]:
         """Return tasks sorted by due date, due time, and priority."""
         return sorted(self.tasks, key=lambda t: (t.due_date, t.due_time, t.priority))
+
+    def sort_by_time(self) -> list[Task]:
+        """Return tasks sorted by due time."""
+        return sorted(self.tasks, key=lambda t: t.due_time)
+
+    def filter_by_pet(self, pet_name: str) -> list[Task]:
+        """Return tasks that belong to a specific pet."""
+        return [t for t in self.tasks if t.pet_name.lower() == pet_name.lower()]
+
+    def filter_by_status(self, completed: bool) -> list[Task]:
+        """Return tasks matching the requested completion status."""
+        return [t for t in self.tasks if t.completed == completed]
+
+    def detect_conflicts(self) -> list[str]:
+        """Return warning messages for tasks scheduled at the same date and time."""
+        warnings = []
+        seen = {}
+
+        for task in self.tasks:
+            key = (task.due_date, task.due_time)
+
+            if key in seen:
+                other = seen[key]
+                warnings.append(
+                    f"Conflict: {task.pet_name}'s task '{task.title}' "
+                    f"overlaps with {other.pet_name}'s task '{other.title}' "
+                    f"on {task.due_date} at {task.due_time}."
+                )
+            else:
+                seen[key] = task
+
+        return warnings
+
+    def mark_task_complete(self, task: Task) -> Task | None:
+        """Mark a task complete and create the next recurring task if needed."""
+        task.mark_complete()
+
+        if task.frequency.lower() == "daily":
+            next_date = date.fromisoformat(task.due_date) + timedelta(days=1)
+        elif task.frequency.lower() == "weekly":
+            next_date = date.fromisoformat(task.due_date) + timedelta(weeks=1)
+        else:
+            return None
+
+        next_task = Task(
+            title=task.title,
+            task_type=task.task_type,
+            due_date=next_date.isoformat(),
+            due_time=task.due_time,
+            priority=task.priority,
+            frequency=task.frequency,
+            pet_name=task.pet_name,
+        )
+
+        self.tasks.append(next_task)
+        return next_task
 
     @classmethod
     def build_from_owner(cls, owner: Owner) -> Scheduler:

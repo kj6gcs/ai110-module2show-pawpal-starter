@@ -14,18 +14,37 @@ owner.add_pet(cat)
 
 scheduler = Scheduler()
 
-scheduler.add_task(Task("Morning walk", "Exercise", today, "08:00", 1), dog)
-scheduler.add_task(Task("Breakfast", "Feeding", today, "09:00", 2), dog)
-scheduler.add_task(Task("Clean litter box", "Cleaning", today, "10:30", 2), cat)
-scheduler.add_task(Task("Evening medicine", "Medication", today, "18:00", 1), cat)
+scheduler.add_task(Task("Evening medicine", "Medication", today, "18:00", 1, "daily"), cat)
+scheduler.add_task(Task("Morning walk", "Exercise", today, "08:00", 1, "daily"), dog)
+scheduler.add_task(Task("Breakfast", "Feeding", today, "09:00", 2, "daily"), dog)
+scheduler.add_task(Task("Clean litter box", "Cleaning", today, "09:00", 2, "daily"), cat)
 
-print("Today's Schedule")
-print("----------------")
+print("Today's Schedule - Sorted by Time")
+print("---------------------------------")
+for task in scheduler.sort_by_time():
+    status = "Done" if task.completed else "Pending"
+    print(f"{task.due_time} | {task.pet_name}: {task.title} ({task.task_type}) [{status}]")
 
-for task in scheduler.prioritize_tasks():
-    if task.is_due_today():
-        status = "Done" if task.completed else "Pending"
-        print(
-            f"{task.due_time} | {task.pet_name}: {task.title} "
-            f"({task.task_type}) - Priority {task.priority} [{status}]"
-        )
+print("\nBuddy's Tasks")
+print("-------------")
+for task in scheduler.filter_by_pet("Buddy"):
+    print(f"{task.due_time} | {task.title}")
+
+print("\nPending Tasks")
+print("-------------")
+for task in scheduler.filter_by_status(False):
+    print(f"{task.due_time} | {task.pet_name}: {task.title}")
+
+print("\nConflict Warnings")
+print("-----------------")
+for warning in scheduler.detect_conflicts():
+    print(warning)
+
+print("\nRecurring Task Demo")
+print("-------------------")
+completed_task = scheduler.tasks[0]
+next_task = scheduler.mark_task_complete(completed_task)
+
+print(f"Completed: {completed_task.title} on {completed_task.due_date}")
+if next_task:
+    print(f"Created next task: {next_task.title} on {next_task.due_date}")
